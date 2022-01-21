@@ -4,15 +4,20 @@ class Calculator(private val skipHeader: Boolean) {
 
     private val prices : LinkedHashMap<String,Double>
     private val consumptions : LinkedHashMap<String,Double>
+    private val pricesFolder = "src/files"
+    private var consumptionFolder = "src/consumption"
+    private val decimalFormatter = "%.2f"
 
     init {
+        if (File("owncons").isDirectory)
+            consumptionFolder = "owncons"
         prices = pricesToMap()
         consumptions = consumptionToMap()
     }
 
     private fun pricesToMap(): LinkedHashMap<String, Double> {
         val priceByDates = LinkedHashMap<String, Double>()
-        val files = File("src/files")
+        val files = File(pricesFolder)
         files.listFiles().map { file ->
             file.useLines { it.toList() }
                 .map {
@@ -29,7 +34,7 @@ class Calculator(private val skipHeader: Boolean) {
 
     private fun consumptionToMap(): LinkedHashMap<String, Double> {
         val consumptionByDates = LinkedHashMap<String, Double>()
-        val files = File("src/consumption")
+        val files = File(consumptionFolder)
         files.listFiles().map { file ->
             file.useLines {
                 val lines = it.toMutableList()
@@ -63,11 +68,11 @@ class Calculator(private val skipHeader: Boolean) {
         println("Consumption by months")
         var total = 0.0
         calc.map {
-            val valueRounded = "%.2f".format(it.value)
+            val valueRounded = decimalFormatter.format(it.value)
             println("${it.key}: $valueRounded kWh")
             total += it.value
         }
-        val totalRounded = "%.2f".format(total)
+        val totalRounded = decimalFormatter.format(total)
         println("Total: $totalRounded kWh")
     }
 
@@ -86,11 +91,11 @@ class Calculator(private val skipHeader: Boolean) {
         println("Price * Monthly consumption")
         var total = 0.0
         calc.map {
-            val valueRounded = "%.2f".format(it.value)
+            val valueRounded = decimalFormatter.format(it.value)
             if (valueRounded != "0,00") println("${it.key}: $valueRounded €")
             total += it.value
         }
-        val totalRounded = "%.2f".format(total)
+        val totalRounded = decimalFormatter.format(total)
         println("Total: $totalRounded €")
     }
 
